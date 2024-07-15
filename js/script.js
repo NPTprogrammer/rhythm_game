@@ -1,37 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    let soundBuffer;
+  let isPlaying = false;
 
-    async function loadSound() {
-        try {
-            const response = await fetch('assets/audio/beat000.mp3');
-            const arrayBuffer = await response.arrayBuffer();
-            soundBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            console.log('Sound loaded successfully');
-        } catch (error) {
-            console.error('Error loading sound:', error);
-        }
+  function playMusic() {
+    if (!isPlaying) {
+      let audio = new Audio("assets/audio/beat000.mp3");
+      isPlaying = true;
+      audio.play();
+      // Briefly reset the flag to allow rapid reactivation
+      setTimeout(() => {
+        isPlaying = false;
+      }, 100);
     }
+  }
 
-    function playSound() {
-        try {
-            const source = audioContext.createBufferSource();
-            source.buffer = soundBuffer;
-            source.connect(audioContext.destination);
-            source.start();
-            console.log('Sound played');
-        } catch (error) {
-            console.error('Error playing sound:', error);
-        }
+  document.addEventListener("keydown", (event) => {
+    if (event.key === " ") {
+      playMusic();
     }
+  });
 
-    document.addEventListener('keydown', (event) => {
-        if (event.key === ' ') {
-            playSound();
-        }
-    });
-
-    // Load the sound
-    loadSound();
+  let playButton = document.getElementById("play");
+  playButton.addEventListener("click", playMusic);
 });
-
